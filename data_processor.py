@@ -4,6 +4,7 @@ import pandas as pd
 from db_connection import DatabaseConnection
 import os
 from config import Config
+from datetime import datetime
 
 class DataProcessor:
     def __init__(self, db_connection):
@@ -18,15 +19,21 @@ class DataProcessor:
 
         df = pd.DataFrame(results)
 
+        # 获取当前时间并格式化为字符串
+        current_time = datetime.now().strftime('%Y%m%d%H%M')
+        file_name = f'order_{current_time}.xlsx'
+
+        # 完整的文件路径
+        output_path = os.path.join(Config.OUTPUT_DIR, file_name)
+
         # 确保输出目录存在
-        output_dir = os.path.dirname(Config.OUTPUT_PATH)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-            print(f"创建目录: {output_dir}")
+        if not os.path.exists(Config.OUTPUT_DIR):
+            os.makedirs(Config.OUTPUT_DIR)
+            print(f"创建目录: {Config.OUTPUT_DIR}")
 
         # 将数据写入Excel文件
-        df.to_excel(Config.OUTPUT_PATH, index=False, engine='openpyxl')
-        print(f"数据已成功导出到{Config.OUTPUT_PATH}")
+        df.to_excel(output_path, index=False, engine='openpyxl')
+        print(f"数据已成功导出到{output_path}")
 
         cursor.close()
 
